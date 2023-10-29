@@ -2,3 +2,10 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+global:
+  persistence:
+    media:
+      claimName: media
+      storageClass: ""
+      annotations:
+      size: 10Gi

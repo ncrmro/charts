@@ -74,29 +74,22 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-            - name: config
+            - name: data
               mountPath: /config
             - name: temp
               mountPath: /jellyfin-temp
             - name: media
               mountPath: /data
-          {{- with .Values.volumeMounts }}
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
       volumes:
-      {{- if .Values.persistence.enabled }}
-      {{- if .Values.persistence.mount }}
-        - name: data
-          persistentVolumeClaim:
-            claimName: {{ .Values.persistence.claimName }}
-      {{- end }}
-      {{- else if not .Values.persistence.enabled }}
-        - name: data
-          emptyDir: {}
-      {{- end }}
-      {{- with .Values.volumes }}
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+      - name: data
+        persistentVolumeClaim:
+          claimName: {{ .Values.persistence.data.claimName }}
+      - name: temp
+        persistentVolumeClaim:
+          claimName: {{ .Values.persistence.temp.claimName }}
+      - name: media
+        persistentVolumeClaim:
+          claimName: {{ .Values.global.persistence.media.claimName }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

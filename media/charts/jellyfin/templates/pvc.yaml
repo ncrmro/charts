@@ -1,26 +1,34 @@
-{{- if and .Values.persistence.enabled .Values.persistence.create }}
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: {{ .Values.persistence.claimName }}
-  namespace: {{ $.Release.Namespace }}
+  name: {{ .Values.persistence.data.claimName }}
   annotations:
-{{ .Values.persistence.annotations | toYaml | indent 4}}
+    helm.sh/resource-policy: keep
+    {{- with .Values.persistence.data.annotations }}
+        {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   accessModes:
-  {{- if gt .Values.replicaCount 1.0 }}
-    - ReadWriteMany
-  {{- else }}
-    {{- .Values.persistence.accessModes | toYaml | nindent 4 }}
-  {{- end }}
+    - ReadWriteOnce
   volumeMode: Filesystem
-  {{- if .Values.persistence.storageClass }}
-  storageClassName: {{ .Values.persistence.storageClass }}
-  {{- end }}
-  {{- with .Values.persistence.volumeName }}
-  volumeName: {{ . }}
-  {{- end }}
+  storageClassName: {{ .Values.persistence.data.storageClass }}
   resources:
     requests:
-      storage: {{ .Values.persistence.size }}
-{{- end }}
+      storage: {{ .Values.persistence.data.size }}
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Values.persistence.temp.claimName }}
+  annotations:
+    {{- with .Values.persistence.data.annotations }}
+        {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  storageClassName: {{ .Values.persistence.temp.storageClass }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.temp.size }}
