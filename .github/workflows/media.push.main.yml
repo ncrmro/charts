@@ -4,11 +4,8 @@ on:
       - main
     paths:
       - media/**
-  pull_request:
-    paths:
-      - media/**
 jobs:
-  assert:
+  release:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -20,3 +17,4 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }} # only needed if version is 'latest'
       - run: helm lint .
+      - run: helm package .
