@@ -34,6 +34,10 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - /usr/bin/jellyfin
+          args:
+            - "--ffmpeg=/usr/lib/jellyfin-ffmpeg/ffmpeg"
           ports:
             - name: http
               containerPort: 8096
@@ -80,6 +84,23 @@ spec:
               mountPath: /jellyfin-temp
             - name: media
               mountPath: /data
+          env:
+            - name: JELLYFIN_DATA_DIR
+              value: /config/data
+            - name: JELLYFIN_CONFIG_DIR
+              value: /config
+            - name: JELLYFIN_LOG_DIR
+              value: /config/log
+            - name: JELLYFIN_CACHE_DIR
+              value: /config/cache
+            - name: JELLYFIN_WEB_DIR
+              value: /usr/share/jellyfin/web
+            - name: PUID
+              value: {{ .Values.securityContext.runAsUser | quote }}
+            - name: GUID
+              value: {{ .Values.securityContext.runAsUser | quote }}
+            - name: TZ
+              value: {{ .Values.global.timezone }}
       volumes:
       - name: data
         persistentVolumeClaim:

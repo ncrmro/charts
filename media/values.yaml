@@ -3,9 +3,14 @@
 # Declare variables to be passed into your templates.
 
 global:
+  timezone: America/Chicago
   persistence:
     media:
-      claimName: media
+      claimName: media-data
       storageClass: ""
       annotations:
       size: 10Gi
+
+jellyfin:
+  securityContext:
+    runAsUser: 911

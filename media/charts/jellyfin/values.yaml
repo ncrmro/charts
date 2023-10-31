@@ -31,13 +31,12 @@ podLabels: {}
 podSecurityContext: {}
   # fsGroup: 2000
 
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
+securityContext:
+   capabilities:
+     drop:
+     - ALL
+   runAsNonRoot: true
+   runAsUser: 911
 
 service:
   type: ClusterIP
@@ -73,15 +72,13 @@ resources: {}
 
 persistence:
   data:
-    claimName: jellyfin-data
-#    volumeName: jellyfin-data
+    claimName: jellyfin-config
     size: 10Gi
     storageClass: ""
     annotations: {}
   # Used for transcode
   temp:
     claimName: jellyfin-temp
-#    volumeName: jellyfin-temp
     size: 10Gi
     storageClass: ""
     annotations: {}
