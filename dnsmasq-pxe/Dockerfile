@@ -34,3 +34,6 @@ RUN cp /usr/lib/syslinux/modules/bios/ldlinux.c32 /tftpboot/bios && \
     cp /usr/lib/syslinux/modules/efi64/libcom32.c32 /tftpboot/efi64 && \
     cp /usr/lib/syslinux/modules/efi64/libutil.c32 /tftpboot/efi64 && \
     cp /usr/lib/SYSLINUX.EFI/efi64/syslinux.efi /tftpboot/efi64
+
+RUN ln -rs /tftpboot/pxelinux.cfg /tftpboot/bios  && \
+    ln -rs /tftpboot/pxelinux.cfg /tftpboot/efi64
