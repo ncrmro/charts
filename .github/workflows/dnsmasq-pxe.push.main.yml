@@ -3,6 +3,7 @@ on:
 #    branches:
 #      - main
     paths:
+      - .github/workflows/dnsmasq*
       - dnsmasq-pxe/**
 env:
   IMAGE_NAME: $GITHUB_RUN_ID
