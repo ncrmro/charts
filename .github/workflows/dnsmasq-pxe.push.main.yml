@@ -54,7 +54,8 @@ jobs:
       - name: Build and Push Image
         uses: docker/build-push-action@v4
         with:
-          context: .
+          file: docker-pxe/Dockerfile
+          context: ./dnsmasq-pxe
           push: true
           tags: ghcr.io/${{ github.repository }}/dnsmasq-pxe:latest,ghcr.io/${{ github.repository }}/dnsmasq-pxe:${{ env.IMAGE_TAG }}
           cache-from: type=gha
