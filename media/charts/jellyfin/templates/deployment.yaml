@@ -1,0 +1,125 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "jellyfin.fullname" . }}
+  labels:
+    {{- include "jellyfin.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "jellyfin.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "jellyfin.labels" . | nindent 8 }}
+	{{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "jellyfin.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - /usr/bin/jellyfin
+          args:
+            - "--ffmpeg=/usr/lib/jellyfin-ffmpeg/ffmpeg"
+          ports:
+            - name: http
+              containerPort: 8096
+              protocol: TCP
+            - name: https
+              containerPort: 8920
+              protocol: TCP
+            - name: service-disc
+              containerPort: 1900
+              protocol: UDP
+            - name: client-disc
+              containerPort: 7359
+              protocol: UDP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 0
+            failureThreshold: 3
+            timeoutSeconds: 1
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 0
+            failureThreshold: 3
+            timeoutSeconds: 1
+            periodSeconds: 10
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 0
+            failureThreshold: 30
+            timeoutSeconds: 1
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: /config
+            - name: temp
+              mountPath: /jellyfin-temp
+            - name: media
+              mountPath: /data
+          env:
+            - name: JELLYFIN_DATA_DIR
+              value: /config/data
+            - name: JELLYFIN_CONFIG_DIR
+              value: /config
+            - name: JELLYFIN_LOG_DIR
+              value: /config/log
+            - name: JELLYFIN_CACHE_DIR
+              value: /config/cache
+            - name: JELLYFIN_WEB_DIR
+              value: /usr/share/jellyfin/web
+            - name: PUID
+              value: {{ .Values.securityContext.runAsUser | quote }}
+            - name: GUID
+              value: {{ .Values.securityContext.runAsUser | quote }}
+            - name: TZ
+              value: {{ .Values.global.timezone }}
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: {{ .Values.persistence.data.claimName }}
+      - name: temp
+        persistentVolumeClaim:
+          claimName: {{ .Values.persistence.temp.claimName }}
+      - name: media
+        persistentVolumeClaim:
+          claimName: {{ .Values.global.persistence.media.claimName }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

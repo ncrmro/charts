@@ -1,0 +1,6 @@
+dependencies:
+- name: jellyfin
+  repository: ""
+  version: 0.1.0
+digest: sha256:6dab973a1d7e74a01ee222ab58663fc40a2f9862c2befd0d7fdbe8f01c732bbd
+generated: "2023-10-29T10:36:47.239888913-05:00"
