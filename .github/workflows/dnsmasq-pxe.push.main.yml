@@ -1,0 +1,58 @@
+on:
+  push:
+#    branches:
+#      - main
+    paths:
+      - dnsmasq-pxe/**
+env:
+  IMAGE_NAME: $GITHUB_RUN_ID
+
+jobs:
+  assert:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./dnsmasq-pxe
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: azure/setup-helm@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }} # only needed if version is 'latest'
+      - run: helm lint .
+
+  build:
+    needs: ['assert']
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+
+    defaults:
+      run:
+        working-directory: ./dnsmasq-pxe
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Add SHORT_SHA env property with commit short sha
+        run: echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
+
+      - name: Add IMAGE_TAG env
+        run: echo "IMAGE_TAG=${{ github.run_id }}-${{ env.SHORT_SHA }}" >> $GITHUB_ENV
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
+
+      - name: Build and Push Image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository }}/dnsmasq-pxe:latest,ghcr.io/${{ github.repository }}/dnsmasq-pxe:${{ env.IMAGE_TAG }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
