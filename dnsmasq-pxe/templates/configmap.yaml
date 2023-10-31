@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: resolv-conf
+data:
+  resolv.conf: |
+    domain home.lan
+    search home.lan
+    nameserver 192.168.1.1
