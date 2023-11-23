@@ -1,0 +1,1 @@
+helm --kube-context ocean --namespace pxe upgrade pxe --install --create-namespace ..
