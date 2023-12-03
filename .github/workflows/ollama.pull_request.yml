@@ -1,0 +1,17 @@
+on:
+  pull_request:
+    paths:
+      - ollama/**
+jobs:
+  assert:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./ollama
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: azure/setup-helm@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }} # only needed if version is 'latest'
+      - run: helm lint .

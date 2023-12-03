@@ -1,0 +1,5 @@
+
+image:
+  tag: 0.1.13
+
+storageClassName: "zfs-ssd"
