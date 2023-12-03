@@ -1,0 +1,34 @@
+# Default values for ollama.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+
+image:
+  repository: ollama/ollama
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+storageClassName: ""
+
+replicaCount: 1
+
+podSecurityContext:
+  fsGroup: 65534
+
+securityContext:
+  capabilities:
+    drop:
+      - ALL
+  runAsNonRoot: true
+  runAsUser: 65534
+  runAsGroup: 65534
+
+
+resources: {}
+#  limits:
+#    cpu: 1
+#    memory: 512Mi
+#  requests:
+#    cpu: 200m
+#    memory: 256Mi
