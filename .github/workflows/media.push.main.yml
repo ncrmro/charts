@@ -1,17 +1,20 @@
 on:
   push:
-    paths:
-      - media/**
-  pull_request:
+    branches:
+      - main
     paths:
       - media/**
 jobs:
-  assert:
+  release:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./media
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - uses: azure/setup-helm@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }} # only needed if version is 'latest'
-      - run: helm lint .
+      - run: helm lint ./chart
+      - run: helm package ./chart
