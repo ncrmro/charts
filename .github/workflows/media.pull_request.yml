@@ -9,18 +9,21 @@ on:
 jobs:
   assert:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./media
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - uses: azure/setup-helm@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }} # only needed if version is 'latest'
-      - run: helm lint media/.
+      - run: helm lint ./chart
       - name: Create k8s Kind Cluster
         uses: helm/kind-action@v1.8.0
       - run: >
           helm --namespace media upgrade --install --create-namespace --wait  --timeout 3m
-          media media/.
+          media ./chart
       - name: List all resources
         # This is always ran even if the helm chart install fails
         if: always()
