@@ -1,2 +1,2 @@
 helm lint ..
-helm template .. > ../templates.yaml
+helm template --debug .. > ../templates.yaml
