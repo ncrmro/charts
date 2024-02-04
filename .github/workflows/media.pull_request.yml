@@ -21,3 +21,7 @@ jobs:
       - run: >
           helm --namespace media upgrade --install --create-namespace --wait  --timeout 3m
           media media/.
+      - name: List all resources
+        # This is always ran even if the helm chart install fails
+        if: always()
+        run: kubectl get all -A
