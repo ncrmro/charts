@@ -26,3 +26,7 @@ jobs:
         # This is always ran even if the helm chart install fails
         if: always()
         run: kubectl get all -A
+      - name: List all resources
+        # This is always ran even if the helm chart install fails
+        if: always()
+        run: kubectl --namespace media get logs deployment.apps/media-jellyfin
