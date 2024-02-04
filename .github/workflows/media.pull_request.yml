@@ -2,6 +2,7 @@ on:
   push:
     paths:
       - media/**
+      - .github/workflows/media.*
   pull_request:
     paths:
       - media/**
