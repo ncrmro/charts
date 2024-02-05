@@ -1,0 +1,18 @@
+on:
+  push:
+    paths:
+      - squid-proxy/**
+      - .github/workflows/squid-proxy.*
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./squid-proxy
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: azure/setup-helm@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }} # only needed if version is 'latest'
+      - run: helm lint .
